@@ -1,0 +1,59 @@
+instances:
+  - url: provable-api-docs.docs.buildwithfern.com
+
+title: Provable API | Documentation
+
+logo:
+  href: https://explorer.provable.com
+
+colors:
+  accentPrimary:
+    dark: '#3dffe0'
+    light: '#0a5c4e'
+  background:
+    dark: '#0f0f10'
+    light: '#ffffff'
+
+layout:
+  page-width: 1280px
+  sidebar-width: 272px
+  content-width: 672px
+
+navbar-links:
+  - type: minimal
+    text: Changelog
+    href: /changelog
+  - type: secondary
+    text: Aleo Developer Docs
+    href: https://developer.aleo.org
+  - type: primary
+    text: Get API Access
+    href: mailto:explorer@provable.com
+
+tabs:
+  guides:
+    display-name: Guides
+    icon: book
+  api:
+    display-name: API Reference
+    icon: code
+
+navigation:
+  - tab: guides
+    layout:
+      - section: Getting Started
+        contents:
+          - page: Introduction
+            path: ./docs/introduction.md
+          - page: Authentication
+            path: ./docs/authentication.md
+          - page: Base URL & Networks
+            path: ./docs/base-url.md
+          - page: Rate Limits
+            path: ./docs/rate-limits.md
+          - page: Errors
+            path: ./docs/errors.md
+  - tab: api
+    layout:
+      - api: Provable API
+        flattened: true

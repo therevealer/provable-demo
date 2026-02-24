@@ -1,0 +1,313 @@
+openapi: 3.1.0
+info:
+  title: Provable API
+  version: 2.0.0
+  description: |
+    The Provable API provides RESTful access to the Aleo blockchain.
+    Query blocks, transactions, programs, staking data, DeFi metrics, and more.
+  contact:
+    email: explorer@provable.com
+
+servers:
+  - url: https://api.provable.com/v2/mainnet
+    description: Mainnet
+  - url: https://api.provable.com/v2/testnet
+    description: Testnet
+
+tags:
+  - name: Blocks
+    description: Query block data and state roots
+  - name: Transactions
+    description: Query and broadcast transactions
+  - name: Programs
+    description: Query deployed Leo programs
+  - name: Address
+    description: Address-specific data and history
+  - name: Staking
+    description: Validator committee and delegation data
+  - name: Network
+    description: Network metrics, supply, and prover stats
+
+paths:
+  /block:
+    get:
+      operationId: getLatestBlock
+      summary: Get latest block
+      description: Returns the most recently confirmed block on the network.
+      tags: [Blocks]
+      responses:
+        '200':
+          description: The latest block object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+              example:
+                block_hash: "ab1qgqh..."
+                previous_hash: "ab1xyz..."
+                header:
+                  metadata:
+                    height: 2847291
+                    timestamp: 1708901234
+                transactions:
+                  - id: "at1abc..."
+                    type: "execute"
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /block/height/latest:
+    get:
+      operationId: getLatestBlockHeight
+      summary: Get latest block height
+      description: Returns the current block height as a plain integer.
+      tags: [Blocks]
+      responses:
+        '200':
+          description: Current block height
+          content:
+            application/json:
+              schema:
+                type: integer
+              example: 2847291
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /block/{heightOrHash}:
+    get:
+      operationId: getBlockByHeightOrHash
+      summary: Get block by height or hash
+      description: Returns a specific block by its height (integer) or hash (string).
+      tags: [Blocks]
+      parameters:
+        - name: heightOrHash
+          in: path
+          required: true
+          description: Block height as an integer or block hash as a string
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+          examples:
+            byHeight:
+              summary: By height
+              value: 2847291
+            byHash:
+              summary: By hash
+              value: "ab1qgqh..."
+      responses:
+        '200':
+          description: The requested block
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /transaction/{transactionId}:
+    get:
+      operationId: getTransaction
+      summary: Get transaction by ID
+      description: Returns a transaction by its transaction ID.
+      tags: [Transactions]
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: The transaction ID
+          schema:
+            type: string
+          example: "at1abc123..."
+      responses:
+        '200':
+          description: The requested transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /transaction/broadcast:
+    post:
+      operationId: broadcastTransaction
+      summary: Broadcast transaction
+      description: |
+        Broadcasts a signed transaction to the Aleo network.
+        The transaction must be fully formed and signed before broadcasting.
+      tags: [Transactions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transaction:
+                  type: string
+                  description: The serialized, signed transaction string
+            example:
+              transaction: '{"type":"execute","id":"at1abc..."}'
+      responses:
+        '200':
+          description: Transaction ID of the broadcast transaction
+          content:
+            application/json:
+              schema:
+                type: string
+              example: "at1abc123..."
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /program/{programId}:
+    get:
+      operationId: getProgram
+      summary: Get program by ID
+      description: |
+        Returns the source code of a deployed Leo program.
+        Program IDs must include the `.aleo` suffix.
+      tags: [Programs]
+      parameters:
+        - name: programId
+          in: path
+          required: true
+          description: The program ID including `.aleo` suffix
+          schema:
+            type: string
+          example: "token_v1.aleo"
+      responses:
+        '200':
+          description: The program source code as a string
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /address/{address}/transactions:
+    get:
+      operationId: getTransactionsByAddress
+      summary: Get transactions by address
+      description: Returns all confirmed transactions associated with an Aleo address.
+      tags: [Address]
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: The Aleo address
+          schema:
+            type: string
+          example: "aleo1xyz..."
+      responses:
+        '200':
+          description: List of transactions for the address
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /committee/latest:
+    get:
+      operationId: getLatestCommittee
+      summary: Get latest committee
+      description: Returns the current validator committee including all active validators and their stake.
+      tags: [Staking]
+      responses:
+        '200':
+          description: The current committee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Committee'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    Block:
+      type: object
+      description: An Aleo block
+      properties:
+        block_hash:
+          type: string
+          description: The unique hash of this block
+        previous_hash:
+          type: string
+          description: Hash of the previous block
+        header:
+          type: object
+          properties:
+            metadata:
+              type: object
+              properties:
+                height:
+                  type: integer
+                  description: Block height
+                timestamp:
+                  type: integer
+                  description: Unix timestamp of block production
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+
+    Transaction:
+      type: object
+      description: An Aleo transaction
+      properties:
+        id:
+          type: string
+          description: The transaction ID
+        type:
+          type: string
+          enum: [deploy, execute]
+          description: Whether this transaction deploys a program or executes one
+
+    Committee:
+      type: object
+      description: The current validator committee
+      properties:
+        starting_round:
+          type: integer
+          description: The round this committee became active
+        members:
+          type: object
+          description: Map of validator addresses to their stake and open status
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Resource not found"
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Invalid parameters"
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal server error"
