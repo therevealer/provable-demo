@@ -46,6 +46,14 @@ navigation:
             path: ./docs/rate-limits.md
           - page: Errors
             path: ./docs/errors.md
+      - section: Guides
+        contents:
+          - page: Your First API Call
+            path: ./docs/guides/quickstart.md
+          - page: Track an Address
+            path: ./docs/guides/track-an-address.md
+          - page: Monitor the Network
+            path: ./docs/guides/monitor-the-network.md
   - tab: api
     layout:
       - api: Provable API

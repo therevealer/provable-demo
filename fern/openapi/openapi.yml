@@ -226,6 +226,271 @@ paths:
                 $ref: '#/components/schemas/Committee'
         '500':
           $ref: '#/components/responses/ServerError'
+    /block/hash/latest:
+    get:
+      operationId: getLatestBlockHash
+      summary: Get latest block hash
+      description: Returns the hash of the most recently confirmed block as a string.
+      tags: [Blocks]
+      responses:
+        '200':
+          description: The latest block hash
+          content:
+            application/json:
+              schema:
+                type: string
+              example: "ab1qgqh3z5y4x..."
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /blocks:
+    get:
+      operationId: getBlocksInRange
+      summary: Get blocks in range
+      description: |
+        Returns a list of blocks within a specified height range.
+        Use this to batch-fetch historical block data without making individual requests per block.
+        The maximum range is 50 blocks per request.
+      tags: [Blocks]
+      parameters:
+        - name: start
+          in: query
+          required: true
+          description: Start block height (inclusive)
+          schema:
+            type: integer
+          example: 2847200
+        - name: end
+          in: query
+          required: true
+          description: End block height (inclusive). Maximum range is 50 blocks.
+          schema:
+            type: integer
+          example: 2847250
+      responses:
+        '200':
+          description: Array of blocks in the specified range
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Block'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /transaction/confirmed/{transactionId}:
+    get:
+      operationId: getConfirmedTransaction
+      summary: Get confirmed transaction
+      description: |
+        Returns a confirmed transaction by its transaction ID.
+        Unlike the base transaction endpoint, this only returns transactions
+        that have been fully confirmed on-chain. Use this when you need
+        certainty that a transaction is final.
+      tags: [Transactions]
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: The transaction ID
+          schema:
+            type: string
+          example: "at1abc123..."
+      responses:
+        '200':
+          description: The confirmed transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /transaction/unconfirmed/{transactionId}:
+    get:
+      operationId: getUnconfirmedTransaction
+      summary: Get unconfirmed transaction
+      description: |
+        Returns a transaction that has been broadcast to the network
+        but not yet included in a confirmed block.
+        Use this to check the status of a recently broadcast transaction
+        while waiting for confirmation.
+      tags: [Transactions]
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: The transaction ID
+          schema:
+            type: string
+          example: "at1abc123..."
+      responses:
+        '200':
+          description: The unconfirmed transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /address/{address}/transitions:
+    get:
+      operationId: getTransitionsByAddress
+      summary: Get transitions by address
+      description: |
+        Returns all transitions associated with an Aleo address.
+        Transitions are the individual function calls within a transaction —
+        they reveal which Leo program functions were called and with what
+        inputs and outputs. Use this for fine-grained activity tracking
+        or building activity feeds.
+      tags: [Address]
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: The Aleo address
+          schema:
+            type: string
+          example: "aleo1rhgdu77ht36c05y44vl823fkwf56f9fcjfzqxn6mlemc7xujpyqs6c0lut"
+      responses:
+        '200':
+          description: List of transitions for the address
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transition'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /address/{address}/earnings:
+    get:
+      operationId: getEarningsByAddress
+      summary: Get earnings by address
+      description: |
+        Returns staking rewards and proving earnings for an Aleo address.
+        Earnings are denominated in microcredits (1 ALEO = 1,000,000 microcredits).
+        Use this to build reward trackers or staking dashboards.
+      tags: [Address]
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: The Aleo address
+          schema:
+            type: string
+          example: "aleo1rhgdu77ht36c05y44vl823fkwf56f9fcjfzqxn6mlemc7xujpyqs6c0lut"
+      responses:
+        '200':
+          description: Earnings data for the address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Earnings'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /supply/latest/total:
+    get:
+      operationId: getTotalSupply
+      summary: Get total supply
+      description: |
+        Returns the total supply of ALEO in microcredits.
+        Total supply includes all staked, liquid, and locked tokens.
+        Divide by 1,000,000 to convert to ALEO.
+      tags: [Network]
+      responses:
+        '200':
+          description: Total supply in microcredits
+          content:
+            application/json:
+              schema:
+                type: integer
+              example: 1580000000000000
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /supply/latest/circulating:
+    get:
+      operationId: getCirculatingSupply
+      summary: Get circulating supply
+      description: |
+        Returns the circulating supply of ALEO in microcredits.
+        Circulating supply excludes locked and unvested tokens.
+        Divide by 1,000,000 to convert to ALEO.
+      tags: [Network]
+      responses:
+        '200':
+          description: Circulating supply in microcredits
+          content:
+            application/json:
+              schema:
+                type: integer
+              example: 980000000000000
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /committee/{height}:
+    get:
+      operationId: getCommitteeByHeight
+      summary: Get committee by height
+      description: |
+        Returns the validator committee that was active at a specific block height.
+        Use this to look up historical committee composition or verify
+        which validators were responsible for a specific block.
+      tags: [Staking]
+      parameters:
+        - name: height
+          in: path
+          required: true
+          description: The block height
+          schema:
+            type: integer
+          example: 2847291
+      responses:
+        '200':
+          description: The committee at the specified height
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Committee'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /delegators/{validator}:
+    get:
+      operationId: getDelegatorsByValidator
+      summary: Get delegators by validator
+      description: |
+        Returns all delegators staking with a specific validator address,
+        including each delegator's staked amount in microcredits.
+        Use this to build validator profile pages or delegation explorers.
+      tags: [Staking]
+      parameters:
+        - name: validator
+          in: path
+          required: true
+          description: The validator address
+          schema:
+            type: string
+          example: "aleo1rhgdu77ht36c05y44vl823fkwf56f9fcjfzqxn6mlemc7xujpyqs6c0lut"
+      responses:
+        '200':
+          description: List of delegators and their staked amounts
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  description: Staked amount in microcredits
+        '404':
+          $ref: '#/components/responses/NotFound'      
 
 components:
   schemas:
@@ -278,6 +543,43 @@ components:
         members:
           type: object
           description: Map of validator addresses to their stake and open status
+    Transition:
+      type: object
+      description: An individual function call within a transaction
+      properties:
+        id:
+          type: string
+          description: The transition ID
+        program:
+          type: string
+          description: The program ID this transition called e.g. token_v1.aleo
+        function:
+          type: string
+          description: The function name that was called
+        inputs:
+          type: array
+          description: Input values passed to the function
+          items:
+            type: object
+        outputs:
+          type: array
+          description: Output values returned by the function
+          items:
+            type: object
+
+    Earnings:
+      type: object
+      description: Staking and proving earnings for an address
+      properties:
+        staking_rewards:
+          type: integer
+          description: Total staking rewards earned in microcredits
+        proving_rewards:
+          type: integer
+          description: Total proving rewards earned in microcredits
+        total:
+          type: integer
+          description: Total earnings in microcredits      
 
     Error:
       type: object

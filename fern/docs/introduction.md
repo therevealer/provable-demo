@@ -3,7 +3,7 @@ title: Introduction
 description: Get started with the Provable API for the Aleo blockchain
 ---
 
-# Provable API
+## Provable API
 
 The Provable API gives developers programmatic access to the Aleo blockchain — 
 blocks, transactions, programs, staking data, DeFi metrics, and more — through 
