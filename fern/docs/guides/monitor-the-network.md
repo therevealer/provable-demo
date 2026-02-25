@@ -3,8 +3,6 @@ title: Monitor the Network
 description: Query block data, validator committee, and staking information
 ---
 
-## Monitor the Network
-
 This guide shows you how to monitor the Aleo network in real time — 
 current block height, validator committee, staking data, and network metrics. 
 Useful for building dashboards, alerting systems, or network explorers.

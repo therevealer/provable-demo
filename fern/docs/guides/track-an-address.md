@@ -3,8 +3,6 @@ title: Track an Address
 description: Get transaction history, earnings, and activity for any Aleo address
 ---
 
-## Track an Address
-
 This guide shows you how to retrieve all activity for a specific Aleo address — 
 transaction history, transitions, and earnings. This is the foundation for building 
 wallets, portfolio trackers, and user dashboards.

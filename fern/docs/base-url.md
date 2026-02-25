@@ -3,8 +3,6 @@ title: Base URL & Networks
 description: Base URL structure and supported networks
 ---
 
-# Base URL & Networks
-
 ## Base URL
 
 All API requests are made to the following base URL:

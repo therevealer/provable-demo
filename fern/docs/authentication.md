@@ -3,8 +3,6 @@ title: Authentication
 description: How to authenticate with the Provable API
 ---
 
-# Authentication
-
 Some Provable API endpoints are public and require no authentication. 
 Others — including Delegated Proving, Record Scanning, and higher rate limit tiers — 
 require a JWT token.

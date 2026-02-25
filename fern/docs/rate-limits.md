@@ -3,8 +3,6 @@ title: Rate Limits
 description: Rate limiting rules for the Provable API
 ---
 
-# Rate Limits
-
 The Provable API enforces rate limits to ensure fair usage across all developers.
 
 ## Default limits

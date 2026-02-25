@@ -3,8 +3,6 @@ title: Errors
 description: Error codes and how to handle them
 ---
 
-# Errors
-
 The Provable API uses standard HTTP status codes. All error responses return 
 a JSON body with an `error` field describing what went wrong.
 

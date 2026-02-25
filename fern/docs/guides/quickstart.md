@@ -3,8 +3,6 @@ title: Your First API Call
 description: Make your first request to the Provable API in under 5 minutes
 ---
 
-## Your First API Call
-
 This guide walks you through making your first request to the Provable API — 
 no authentication required, no setup, just a working API call in under 5 minutes.
 

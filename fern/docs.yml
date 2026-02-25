@@ -5,6 +5,7 @@ instances:
 title: Provable API | Documentation
 logo:
   href: https://explorer.provable.com
+  
 colors:
   accentPrimary:
     dark: "#d20cc3"
