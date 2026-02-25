@@ -1,24 +1,19 @@
 instances:
   - url: provable-api-docs.docs.buildwithfern.com
-
 title: Provable API | Documentation
-
 logo:
   href: https://explorer.provable.com
-
 colors:
   accentPrimary:
-    dark: '#3dffe0'
-    light: '#0a5c4e'
+    dark: "#d20cc3"
+    light: "#c90c9a"
   background:
-    dark: '#0f0f10'
-    light: '#ffffff'
-
+    dark: "#0f0f10"
+    light: "#ffffff"
 layout:
   page-width: 1280px
   sidebar-width: 272px
   content-width: 672px
-
 navbar-links:
   - type: minimal
     text: Changelog
@@ -29,7 +24,6 @@ navbar-links:
   - type: primary
     text: Get API Access
     href: mailto:explorer@provable.com
-
 tabs:
   guides:
     display-name: Guides
@@ -37,7 +31,6 @@ tabs:
   api:
     display-name: API Reference
     icon: code
-
 navigation:
   - tab: guides
     layout:
